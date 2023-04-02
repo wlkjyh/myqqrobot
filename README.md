@@ -153,3 +153,39 @@ def ping(request,domain):
 
 
 
+如果你希望同时发送多条消息，你可以返回一个元组
+
+例如：
+```
+def test(request):
+
+    return '消息1','消息2','消息3'
+```
+
+同时你也可以使用``模板``进行返回
+
+模板采用jinja2实现的，所以myQQBot的模板实际上是jinja2的一个超集
+
+使用模板前，你需要在``resource/template``中定义一个模板，模板是没有任何扩展名的。
+
+例如：
+```
+#模板：code
+
+你好：{{ name }}
+
+# 控制器方法
+
+def test(request):
+
+    return request.template('code',{
+        'name' : 'wlkjyy'
+    })
+
+```
+
+上述示例发送出的内容为``你好：wlkjyy``
+
+
+### API模块
+在API模块中我们实现了许多的QQ操作，你需要自己阅读。
