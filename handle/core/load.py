@@ -5,9 +5,20 @@ from handle.core.Log import Log as log
 import handle.running
 import re
 import json
-
+import inspect
 
 def controller(packageName,alias=None):
+    # 获取谁调用了这个方法，具体文件名
+    register_stack = inspect.stack()[1][1]
+
+    is_provider = False
+    if 'register.py' not in register_stack and 'provider' in register_stack:
+        # 服务提供者需要加载控制器
+        # print('服务提供者需要加载控制器')
+        is_provider = True
+        
+    
+
     """加载控制器
 
     Args:
@@ -18,19 +29,45 @@ def controller(packageName,alias=None):
         bool: 是否加载成功
     """    
     # /app/controller/{PackageName}.py
-    if os.path.exists(constant.APP_CONTROLLER_PATH + packageName + '.py'):
-        # return __import__(constant.APP_CONTROLLER_NAMESPACE + '.' + packageName, fromlist=True)
-        
-        if alias is None:
-            handle.running.controller[packageName] = __import__(constant.APP_CONTROLLER_NAMESPACE + '.' + packageName, fromlist=True)
+    if not is_provider:
+        if os.path.exists(constant.APP_CONTROLLER_PATH + packageName + '.py'):
+            # return __import__(constant.APP_CONTROLLER_NAMESPACE + '.' + packageName, fromlist=True)
+            
+            if alias is None:
+                handle.running.controller[packageName] = __import__(constant.APP_CONTROLLER_NAMESPACE + '.' + packageName, fromlist=True)
+            else:
+                handle.running.controller[alias] = __import__(constant.APP_CONTROLLER_NAMESPACE + '.' + packageName, fromlist=True)
+
+            return True
         else:
-            handle.running.controller[alias] = __import__(constant.APP_CONTROLLER_NAMESPACE + '.' + packageName, fromlist=True)
+            log.error('不能加载控制器“' + packageName + '”，因为找不到：' + constant.APP_CONTROLLER_PATH + packageName + '.py' + "文件")
+            log.error('程序停止运行')
+            os._exit(0)
+    else:
+        # 获取register_stack的目录
+        register_stack_dir = os.path.dirname(register_stack)
+        split = register_stack_dir.replace('\\','.').replace('/','.').split('.provider.')
+        if len(split) < 2:
+            log.error('服务提供者加载控制器必须在provider\\提供者名称目录下')
+            log.error('程序停止运行')
+            os._exit(0)
+        namespace = 'provider.' + split[1] + '.' + packageName
+        real_packageName = packageName.replace('.','\\')
+        if not os.path.exists(register_stack_dir + '\\' + real_packageName + '.py'):
+            log.error('不能加载服务提供者“' + split[1] + '”所提供的控制器“' + packageName + '”，因为找不到：' + register_stack_dir + '\\' + real_packageName + '.py' + "文件")
+            log.error('程序停止运行')
+            os._exit(0)
+
+        if alias is None:
+            handle.running.controller[packageName] = __import__(namespace, fromlist=True)
+        else:
+            handle.running.controller[alias] = __import__(namespace, fromlist=True)
 
         return True
-    else:
-        log.error('控制器 "' + packageName + '" 不存在。')
-        log.error('程序停止运行')
-        os._exit(0)
+
+
+
+
 
 def middleware(packageName,alias=None):
     """加载中间件
@@ -42,19 +79,49 @@ def middleware(packageName,alias=None):
     Returns:
         bool: 是否加载成功
     """    
-    # /app/middleware/{PackageName}.py
-    if os.path.exists(constant.APP_MIDDLEWARE_PATH + packageName + '.py'):
-        # return __import__(constant.APP_MIDDLEWARE_NAMESPACE + '.' + packageName, fromlist=True)
-        if alias is None:
-            handle.running.middleware[packageName] = __import__(constant.APP_MIDDLEWARE_NAMESPACE + '.' + packageName, fromlist=True)
-        else:
-            handle.running.middleware[alias] = __import__(constant.APP_MIDDLEWARE_NAMESPACE + '.' + packageName, fromlist=True)
+    register_stack = inspect.stack()[1][1]
 
-        return True
+    is_provider = False
+    if 'register.py' not in register_stack and 'provider' in register_stack:
+        # 服务提供者需要加载控制器
+        # print('服务提供者需要加载控制器')
+        is_provider = True
+    
+    if not is_provider:
+        # /app/middleware/{PackageName}.py
+        if os.path.exists(constant.APP_MIDDLEWARE_PATH + packageName + '.py'):
+            # return __import__(constant.APP_MIDDLEWARE_NAMESPACE + '.' + packageName, fromlist=True)
+            if alias is None:
+                handle.running.middleware[packageName] = __import__(constant.APP_MIDDLEWARE_NAMESPACE + '.' + packageName, fromlist=True)
+            else:
+                handle.running.middleware[alias] = __import__(constant.APP_MIDDLEWARE_NAMESPACE + '.' + packageName, fromlist=True)
+
+            return True
+        else:
+            log.error('不能加载中间件“' + packageName + '”，因为找不到：' + constant.APP_MIDDLEWARE_PATH + packageName + '.py' + "文件")
+            log.error('程序停止运行')
+            os._exit(0)
     else:
-        log.error('中间件 "' + packageName + '" 不存在。')
-        log.error('程序停止运行')
-        os._exit(0)
+        register_stack_dir = os.path.dirname(register_stack)
+        split = register_stack_dir.replace('\\','.').replace('/','.').split('.provider.')
+        if len(split) < 2:
+            log.error('服务提供者加载中间件必须在provider\\提供者名称目录下')
+            log.error('程序停止运行')
+            os._exit(0)
+        namespace = 'provider.' + split[1] + '.' + packageName
+        real_packageName = packageName.replace('.','\\')
+        if not os.path.exists(register_stack_dir + '\\' + real_packageName + '.py'):
+            log.error('不能加载服务提供者“' + split[1] + '”所提供的中间件“' + packageName + '”，因为找不到：' + register_stack_dir + '\\' + real_packageName + '.py' + "文件")
+            log.error('程序停止运行')
+            os._exit(0)
+        
+        if alias is None:
+            handle.running.middleware[packageName] = __import__(namespace, fromlist=True)
+        else:
+            handle.running.middleware[alias] = __import__(namespace, fromlist=True)
+
+        return False
+
 
 
 def deny(json_file):

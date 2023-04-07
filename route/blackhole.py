@@ -17,5 +17,5 @@ load.deny(constant.DENY_FILE)
 """
 
 
-deny.group(group_id=12345678,remove=False)
-deny.user(user_id=10001,remove=False)
+# deny.group(group_id=12345678,remove=False)
+# deny.user(user_id=10001,remove=False)

@@ -1,5 +1,7 @@
 import sys
 
+# 是否开启调试模式（开启DEBUG模式会在修改文件后自动重启程序） 
+DEBUG = True
 # 系统根目录
 SYS_ROOT = sys.path[0]
 # 应用命名空间

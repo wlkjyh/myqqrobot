@@ -27,6 +27,10 @@ def run():
     middleware_private = kernel().middlewareGroups[key.MESSAGE_PRIVATE]
     running.middleware_private = [ running.middleware[middleware] for middleware in middleware_private ]
 
+
+    # 加载服务提供者
+    import bootstrap.providers
+
     # 加载cache守护进程服务
     t = threading.Thread(target=Cache().daemon)
     t.setDaemon(True)
@@ -39,11 +43,12 @@ def run():
     # 加载模板引擎
     import bootstrap.template
 
+    # 加载测试模块
+    import bootstrap.test as test
+
     # 加载flask后端服务
     import bootstrap.flaskService as flaskService
 
 
-    # 加载测试模块
-    import bootstrap.test as test
 
     pass

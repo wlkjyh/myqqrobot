@@ -17,7 +17,7 @@ class backend:
     @staticmethod
     def startWithFlask(app):
         Log.info('Flask 后端服务已启动。')
-        app.run(host=constant.LISTEN[0],port=constant.LISTEN[1],debug=False)
+        app.run(host=constant.LISTEN[0],port=constant.LISTEN[1],debug=constant.DEBUG)
 
     def run(self,app):
 

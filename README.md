@@ -7,13 +7,18 @@
 ```
 pip install -r requirement.txt
 ```
+### 更新信息
+- 2023-04-07
+    
+    1、加入了服务提供者等功能
+    2、更新了相关提示信息
 
 ## 基本用法
 ### 消息路由
 你需要在``route/register.py``中注册一个消息路由
 例如：
 
-```
+```py
 Route.group('^菜单$','Controller','menu')
 ```
 
@@ -23,14 +28,14 @@ Route.group('^菜单$','Controller','menu')
 
 例如：
 
-```
+```py
 import handle.core.load as load
 load.controller('Controller',alias=None)
 ```
 
 上述代码注册了``Controller``控制器，提示：load模块对注册``controller``、``middleware``支持设置别名。例如
 
-```
+```py
 load.controller('Controller','Ctrl')
 Route.group('^菜单$','Ctrl','menu')
 ```
@@ -41,7 +46,7 @@ Route.group('^菜单$','Ctrl','menu')
 
 例如：
 
-```
+```py
 load.middleware('default')
 Route.group('^<test> (.*?)$','Controller','test',middleware=['default'],alias={
     'test' : '测试|debug'
@@ -59,15 +64,15 @@ Route.group('^<test> (.*?)$','Controller','test',middleware=['default'],alias={
 
 
 - 配置10001为QQ黑名单
-    ```
+    ```py
     deny.user(user_id=10001)
     ```
 - 配置123456为群黑名单
-    ```
+    ```py
     deny.group(group_id=123456)
     ```
 - 将QQ：10001和群：123456移除黑名单
-    ```
+    ```py
     deny.user(user_id=10001,remove=True)
     deny.group(group_id=123456,remove=True)
     ```
@@ -75,20 +80,20 @@ Route.group('^<test> (.*?)$','Controller','test',middleware=['default'],alias={
     
     这里我们需要用到load模块中的blackhole方法
 
-    ```
+    ```py
     load.blackhole('resource/blackhole.json')
     ```
 
     在```resource/blackhole.json```文件中基本格式如下
 
-    ```
+    ```json
     {
         "user":[],
         "group":[]
     }
     ```
 - 将黑名单信息保存到文件
-    ```
+    ```py
     deny.user(user_id=10001,write_file=True)
     deny.user(user_id=10001,write_file=True,remove=True)
     deny.group(group_id=123456,write_file=True)
@@ -101,7 +106,7 @@ Route.group('^<test> (.*?)$','Controller','test',middleware=['default'],alias={
 
 基本格式如下
 
-```
+```py
 from handle.support.middleware import Middleware as Middleware
 def handle_message(request):
 
@@ -127,7 +132,7 @@ def handle_message(request):
 
 实现控制器方法，基本格式如下
 
-```
+```py
 def test(request):
 
     return 'OK'
@@ -140,7 +145,7 @@ def test(request):
 
 例如:
 
-```
+```py
 # 路由部分
 Route.any('^ping (.*)$','Controller','ping')
 
@@ -156,7 +161,7 @@ def ping(request,domain):
 如果你希望同时发送多条消息，你可以返回一个元组
 
 例如：
-```
+```py
 def test(request):
 
     return '消息1','消息2','消息3'
@@ -169,7 +174,7 @@ def test(request):
 使用模板前，你需要在``resource/template``中定义一个模板，模板是没有任何扩展名的。
 
 例如：
-```
+```python
 #模板：code
 
 你好：{{ name }}
@@ -189,3 +194,54 @@ def test(request):
 
 ### API模块
 在API模块中我们实现了许多的QQ操作，你需要自己阅读。
+
+
+### 服务提供者
+服务提供者类似于其他框架中所说的```插件```，你可以在```provider```目录中创建一个子目录实现服务提供者。
+
+
+基本要求：
+- 必须包含info.py文件
+```python
+# 服务名称
+SERVICE_NAME = 'test'
+# 服务版本
+SERVICE_VERSION = '1.0.0'
+# 服务描述
+SERVICE_DESCRIPTION = '这是一个测试服务提供者，服务提供者可以加载其他开发者编写的控制器和中间件，以用来扩展框架的功能'
+# 服务提供者
+SERVICE_PROVIDER = 'MyCQBot'
+# 服务提供者网址
+SERVICE_PROVIDER_URL = 'http://example.com'
+# 服务提供者邮箱
+SERVICE_PROVIDER_EMAIL = 'mail@example.com'
+```
+- 必须包含route.py文件
+```py
+from handle.core.Route import Route as Route
+import handle.core.load as load
+""" 
+    服务提供者实例路由文件
+    注意：服务提供者加载控制器切记不要和框架的控制器重名，否则会导致服务提供者无法加载
+    如果有重名，建议在加载控制器或者中间件时候设置别名
+"""
+load.controller('Controller',alias='test_controller')
+
+Route.any('^服务提供者$', 'test_controller','menu')
+
+```
+
+
+总的来说，开发服务提供者和直接在框架中开发是相同的，你只是需要配置route.py和info.py文件。
+
+值得注意的是，加载控制器和中间件，名称不能和框架中开发的名称相同，如果存在相同，建议设置alias别名。
+
+如果你的控制器和中间件实现在子目录，请使用``.``来代替``\``，并且必须设置别名，注意：框架中开发不支持该写法。
+
+例如我的控制器在provider\\test\\controller\\Test.py
+那么代码应该这样写
+```py
+load.controller('controller.Test',alias='Test')
+```
+
+其他开发流程和框架中开发是相同的。

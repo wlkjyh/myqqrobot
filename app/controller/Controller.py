@@ -8,7 +8,7 @@ import handle.support.key as key
 def menu(request):
     text = func.package_message([
         cq().at(request.user_id),
-        'demo'
+        '这是myQQRobot默认提供的菜单函数，该函数位于app\controller\Controller.py，你可以在这里编写你的菜单函数'
     ])
 
     if request.type == key.MESSAGE_PRIVATE:
