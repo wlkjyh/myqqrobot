@@ -11,7 +11,40 @@ pip install -r requirement.txt
 - 2023-04-07
     
     1、加入了服务提供者等功能
+
     2、更新了相关提示信息
+
+- 2023-06-06
+    
+    1、支持使用``request.send(消息内容)``来发送消息
+
+    2、修复``return 布尔类型``会发送布尔值的BUG
+
+    3、提供了``request.is_type(期望消息类型)``方法来判断消息类型，支持``private``和``group``
+
+    4、全新提供``DB``门面操作数据库
+
+
+
+### 特别提醒
+
+``go-cqhttp``可能不是最新版本，你可以前往``https://github.com/Mrs4s/go-cqhttp/releases``下载最新的``go-cqhttp``驱动程序。
+
+当你重新下载``go-cqhttp``后，请完成相关初始化，且设置通信方式为``HTTP通信``
+
+### FAQ
+---
+问：提示``[2023-06-06 12:54:12] [WARNING]: 当前协议不支持二维码登录, 请配置账号密码登录.``
+
+答：请现在config.yml中配置账号密码
+
+---
+
+
+
+
+
+
 
 ## 基本用法
 ### 消息路由
@@ -245,3 +278,68 @@ load.controller('controller.Test',alias='Test')
 ```
 
 其他开发流程和框架中开发是相同的。
+
+
+### DB门面
+DB门面为你提供了可用性和可靠性都非常不错的操作数据库的解决方案。
+
+
+使用该门面，请使用以下代码导入
+```py
+from handle.support.DB import DB as DB
+```
+
+提供的操作方法和Laravel是一致的。以下展示几个示例。
+
+---
+- 查询user表中qq号为123456的第一条结果
+```py
+DB().table('user').where('qq',123456).first()
+```
+---
+- 查询user表中 coin大于5000的所有结果
+```py
+DB().table('user').where('coin','>',5000).get()
+```
+---
+- 查询vip表中，level为7的最后一条结果
+```py
+DB().table('vip').where('level',7).end()
+```
+---
+- 插入一条数据到user表
+```py
+DB().table('user').create({
+    'qq' : 123456,
+    'coin' : 0
+})
+```
+
+---
+- 删除user表中qq为123456的结果
+```py
+DB().table('user').where('qq',123456).delete()
+```
+
+---
+- 查询user表中qq为123456或者coin大于1000的结果
+```py
+DB().table('user').where('qq',123456).orWhere('coin','>',1000).first()
+```
+
+---
+- 修改user表中qq为123456的数据，将他的coin修改为9999
+
+```py
+DB().table('user').where('qq',123456).update({
+    'coin' : 9999
+})
+
+```
+
+---
+
+注意，你可以配置``primaryKey``、``created_at``、``updated_at``参数，分别代表了``主键``、``创建时间``、``修改时间``
+
+更多操作请参考源码
+

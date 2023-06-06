@@ -42,20 +42,20 @@ class Middleware:
                         if send_type == key.MESSAGE_GROUP:
                             for i in getreturn:
                                 # 只能是字符串或者整数
-                                if isinstance(i, str) or isinstance(i, int):
+                                if isinstance(i, str) or isinstance(i, int) and not isinstance(i, bool):
                                     API().send_group_msg(request.group_id, i)
                         elif send_type == key.MESSAGE_PRIVATE:
                             for i in getreturn:
-                                if isinstance(i, str) or isinstance(i, int):
+                                if isinstance(i, str) or isinstance(i, int) and not isinstance(i, bool):
                                     API().send_private_msg(request.user_id, i)
                     else:
                         if send_type == key.MESSAGE_GROUP:
                             
-                            if isinstance(getreturn, str) or isinstance(getreturn, int):
+                            if isinstance(getreturn, str) or isinstance(getreturn, int) and not isinstance(getreturn, bool):
                                 API().send_group_msg(request.group_id, getreturn)
                         elif send_type == key.MESSAGE_PRIVATE:
                             
-                            if isinstance(getreturn, str) or isinstance(getreturn, int):
+                            if isinstance(getreturn, str) or isinstance(getreturn, int) and not isinstance(getreturn, bool):
                                 API().send_private_msg(request.user_id, getreturn)
 
                 return True

@@ -9,6 +9,7 @@ def handle_message(request):
     group_id = request.group_id
     user_id = request.user_id
 
+
     if user_id != None:
         if user_id in running.deny_user:
             return Middleware.ignore(request,noInfo=True)

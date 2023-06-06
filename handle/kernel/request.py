@@ -4,6 +4,10 @@ import re
 import handle.constant as constant
 import os
 import handle.running as running
+import handle.support.key as key
+from handle.support.API import API as API
+
+
 
 class request:
 
@@ -58,3 +62,40 @@ class request:
             pass
         except Exception as e:
             return '模板渲染失败：' + str(e)
+        
+    def send(self,text):
+        """发送消息
+
+        Args:
+            text (str): 消息内容
+        """
+        send_type = self.type
+
+        if send_type == key.MESSAGE_GROUP:
+                            
+            if isinstance(text, str) or isinstance(text, int):
+                API().send_group_msg(self.group_id, text)
+        elif send_type == key.MESSAGE_PRIVATE:
+                            
+            if isinstance(text, str) or isinstance(text, int):
+                API().send_private_msg(self.user_id, text)
+
+    def is_type(self,typename):
+        """判断消息类型
+
+        Args:
+            typename (string): 消息类型
+
+        Returns:
+            bool: 返回True或False
+        """
+        typename = typename.upper()
+        if typename == 'GROUP':
+            typename = key.MESSAGE_GROUP
+        elif typename == 'PRIVATE':
+            typename = key.MESSAGE_PRIVATE
+
+        if self.type == typename:
+            return True
+        else:
+            return False

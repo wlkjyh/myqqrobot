@@ -1,7 +1,8 @@
 import sys
+from handle.helper import *
 
 # 是否开启调试模式（开启DEBUG模式会在修改文件后自动重启程序） 
-DEBUG = True
+DEBUG = env('DEBUG',True)
 # 系统根目录
 SYS_ROOT = sys.path[0]
 # 应用命名空间
@@ -34,9 +35,17 @@ GOCQ_FILE = BIN_PATH + 'gocqhttp.exe'
 TEMPLATE_PATH = RESOURCE_PATH + '/template/'
 
 # go-cqhttp的HTTP API地址
-HTTP_API = 'http://127.0.0.1:35351'
+HTTP_API = env('HTTP_API','http://127.0.0.1:35351')
 # 机器人框架监听信息
 LISTEN = [
     '127.0.0.1',
     5701
 ]
+
+
+DB_OPEN = env('DB_OPEN',False)
+DB_HOST = env('DB_HOST','localhost')
+DB_PORT = env('DB_PORT',3306)
+DB_USERNAME = env('DB_USERNAME',None)
+DB_PASSWORD = env('DB_PASSWORD',None)
+DB_DATABASE = env('DB_DATABASE',None)
