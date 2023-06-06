@@ -74,6 +74,22 @@ class DB:
 
 
     
+    def timestamps(self,bool=True):
+        """是否开启记录时间
+
+        Args:
+            bool (bool, optional): _description_. Defaults to True.
+        """
+        if bool == False:
+            self.created_at = False
+            self.updated_at = False
+        else:
+            self.created_at = True
+            self.updated_at = True
+
+
+
+    
     def table(self,table_name):
         """选择表
 
