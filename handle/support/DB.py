@@ -58,6 +58,19 @@ class DB:
         self.primaryKey = primaryKey
         self.created_at = created_at
         self.updated_at = updated_at
+        table_name = None
+        self.wheres = []
+        self.orWheres = []
+        self.orderBys = None
+        self.selects = ['*']
+        self.isDelete = False
+        self.updateData = []
+        self.limit_start = None
+        self.limit_end = None
+        self.created_at_field = 'created_at'
+        self.updated_at_field = 'updated_at'
+        self.toSqls = None
+        self.completeValue = []
 
 
     
@@ -208,7 +221,7 @@ class DB:
         try:
             return self._query(sql)
         except Exception as e:
-            return Exception(e)
+            return {'error':e}
     
     def paginate(self,page=1,limit=10):
         """分页查询
@@ -270,7 +283,7 @@ class DB:
             
         except Exception as e:
             db_conn.rollback()
-            return Exception(e)
+            return {'error':e}
     
     def update(self,dict):
         """更新数据
