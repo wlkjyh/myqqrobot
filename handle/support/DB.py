@@ -161,11 +161,16 @@ class DB:
         """选择字段
 
         Args:
-            select (list): 字段，用,分割
+            select (list): 字段
 
         
         """
-        self.selects = select
+
+        # 当 = 1时，说明查询所有字段，要把它清空
+        if len(self.selects) == 1 and self.selects[0] == '*':
+            self.selects = []
+
+        self.selects.append(select)
         return self
     
     def create(self,dict):
@@ -222,6 +227,43 @@ class DB:
             return self._query(sql)
         except Exception as e:
             return {'error':e}
+        
+        
+    def findAuto(self,op,value=None):
+        """自动处理查询
+
+        Args:
+            value (str): 查询值
+        """
+        try:
+            db_conn.ping(reconnect=True)
+        except Exception as e:
+            pass
+
+        if self.table_name == None:
+            raise Exception('未选择表')
+        
+
+        # 先反射出表的字段
+        sql = 'desc ' + self.table_name
+        cursor = db_conn.cursor()
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        cursor.close()
+
+        if value == None:
+            value = op
+            op = '='
+
+        for k in range(len(result)):
+            v = result[k]
+            if k == 0:
+                self.where(v[0],op,value)
+            else:
+                self.orWhere(v[0],op,value)
+
+        return self.first()
+        
     
     def paginate(self,page=1,limit=10):
         """分页查询
