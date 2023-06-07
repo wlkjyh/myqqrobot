@@ -46,12 +46,41 @@ class backend:
                 instance.set_kv('message',cq().clearCQ(message['message']))
                 instance.set_kv('source_message',message['message'])
                 instance.set_kv('event_time',time.time())
+                
+                instance.set_kv('nickname',message['sender']['nickname'])
+
+                instance.set_kv('msg_type',key.MESSAGE_MESSAGE)
+                instance.set_kv('self_id',message['self_id'])
 
 
                 
                 handler().next(instance=instance)
 
                 pass
+
+            # 等下需要实现的事件消息
+            elif message['post_type'] == 'notice':
+                # print(message)
+                sub_type = message['notice_type']
+
+
+                instance = requests()
+                for k,v in message.items():
+                    instance.set_kv(k,v)
+
+                instance.set_kv('msg_type',key.MESSAGE_EVENT)
+                instance.set_kv('type','event')
+                instance.set_kv('event_time',time.time())
+                instance.set_kv('message',sub_type)
+
+
+                # print(instance.__dict__)
+
+                handler().next(instance=instance)
+
+            
+
+
 
 
 

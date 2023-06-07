@@ -24,6 +24,17 @@ pip install -r requirement.txt
 
     4、全新提供``DB``门面操作数据库
 
+- 2023-06-07
+
+    1、全新提供事件路由（Route.event进行注册）
+    
+    2、在request中提供了``request.nickname``来获取用户昵称
+    
+    3、优化了``DB``门面，提供了更多的操作方法，例如``increment``、``decrement``、``value``、``valueMany``、``getPrimaryKey``
+
+    4、服务提供者支持``BOOT``选项来设置是否开启
+
+
 
 
 ### 特别提醒
@@ -86,6 +97,21 @@ Route.group('^<test> (.*?)$','Controller','test',middleware=['default'],alias={
 })
 ```
 上述代码加载了```default```中间件，并在消息路由中进行了应用。同时为test设置了别名，注意：设置别名的字段，必须使用``<>``进行包裹。那么上述代码使用``test 1``、``debug 1``、``测试 1``均能够被匹配到
+
+
+在近期更新中，我们提供了事件路由，可以使用``Route.event``来进行注册
+
+例如
+```py
+import handle.support.event as Event
+Route.event(Event.GROUP_UPLOAD,'Controller','upload_file')
+```
+
+以上代码注册了一个事件路由，当有人上传文件时，会触发``upload_file``方法。
+
+注意：事件中间件绝对没有``alias``选项，因为事件路由不需要匹配参数，所以也不需要设置别名。
+
+
 
 ### 黑名单（blackhole）
 黑名单，顾名思义就是拒绝上某人或某群拒绝服务，它基本原理是通过全局中间件实现的，如果你不希望使用该功能，可以在``app/kernel.py``文件中删除``blackhole``的注册

@@ -10,3 +10,5 @@ SERVICE_PROVIDER = 'MyCQBot'
 SERVICE_PROVIDER_URL = 'http://example.com'
 # 服务提供者邮箱
 SERVICE_PROVIDER_EMAIL = 'mail@example.com'
+# 是否开启
+BOOT = False

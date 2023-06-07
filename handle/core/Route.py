@@ -111,3 +111,26 @@ class Route:
         return True
 
         pass
+
+    @staticmethod
+    def event(reg,controller,action,middleware=[]):
+        """事件注册
+
+        Args:
+            reg (_type_): 事件类型
+            controller (_type_): _description_
+            action (_type_): _description_
+            middleware (list, optional): _description_. Defaults to [].
+        """
+
+        ri.event.append({
+            'type' : 'event',
+            'reg' : reg,
+            'controller' : ri.controller[controller],
+            'action' : action,
+            'middleware' : [ri.middleware[i] for i in middleware],
+
+            # 这里用的是和私聊消息同一个代码，为了兼容，但是实际上这里是没有用的
+            'alias' : []
+        })
+        return True

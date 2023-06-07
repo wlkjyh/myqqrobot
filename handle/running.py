@@ -3,6 +3,7 @@
 """
 
 route = []
+event = []
 controller = {}
 middleware = {}
 deny_group = []

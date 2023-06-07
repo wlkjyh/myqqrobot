@@ -21,8 +21,6 @@ def menu(request):
         # 群聊消息
         pass
 
-    # user_info = DB().table('user').where('qq',request.user_id).find()
-
 
     """ 
         你可以通过以下三种方式发送消息：
@@ -34,7 +32,11 @@ def menu(request):
 
         其中，1和3是自动判断消息类型。
     """
-    # request.send(text)
+    request.send(text)
 
     # 如果返回布尔类型或者None，这里第3方法是不会发送消息的
     return True
+
+
+def upload_file(request):
+    print(request.__dict__)

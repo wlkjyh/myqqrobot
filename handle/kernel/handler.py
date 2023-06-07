@@ -19,7 +19,15 @@ class handler:
     """
     def childThread(self,instance):
         # 开始解析路由，来分发给中间件
-        for rule in running.route:
+
+        msg_type = instance.msg_type
+
+        if msg_type == key.MESSAGE_MESSAGE:
+            route = running.route
+        else:
+            route = running.event
+
+        for rule in route:
 
 
             route_alias = rule['alias']

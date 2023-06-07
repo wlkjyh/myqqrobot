@@ -21,6 +21,9 @@ for dirs in os.listdir(provider_dir):
         VERSION = provider_info.SERVICE_VERSION
         SERVICE_PROVIDER = provider_info.SERVICE_PROVIDER
         DESCRIPTION = provider_info.SERVICE_DESCRIPTION
+        BOOT = provider_info.BOOT
+        if not BOOT:
+            continue
 
         Log.info('正在加载服务提供者：' + NAME + '\n版本：' + VERSION + '\n描述：' + DESCRIPTION + '\n提供者：' + SERVICE_PROVIDER + '\n')
 
